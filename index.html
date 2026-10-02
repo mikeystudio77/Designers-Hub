@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DESIGNERS HUB // 赤と青 RED & BLUE APEX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #040508;
+      --red: #ff0044;
+      --red-glow: rgba(255, 0, 68, 0.6);
+      --blue: #00d4ff;
+      --blue-glow: rgba(0, 212, 255, 0.6);
+      --purple-accent: #9d4edd;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --card-bg: rgba(9, 11, 18, 0.82);
+      --card-border: rgba(255, 255, 255, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: 'Rajdhani', sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Ambient Dual Particle Engine */
+    #dual-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .vignette {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at 20% 20%, rgba(255, 0, 68, 0.12) 0%, transparent 45%),
+                  radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.12) 0%, transparent 45%),
+                  radial-gradient(circle at center, transparent 40%, rgba(2, 3, 5, 0.92) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 3;
+    }
+
+    /* Top Dual Energy Strip */
+    .top-strip {
+      background: linear-gradient(90deg, rgba(255, 0, 68, 0.15) 0%, rgba(9, 11, 18, 0.9) 50%, rgba(0, 212, 255, 0.15) 100%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 7px 8%;
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 1.5px;
+    }
+
+    .strip-red { color: var(--red); text-shadow: 0 0 10px var(--red-glow); }
+    .strip-blue { color: var(--blue); text-shadow: 0 0 10px var(--blue-glow); }
+
+    /* Navbar */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 8%;
+      background: rgba(4, 5, 8, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .kanji-emblem {
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      font-weight: 900;
+      padding: 3px 10px;
+      background: linear-gradient(135deg, rgba(255, 0, 68, 0.2), rgba(0, 212, 255, 0.2));
+      border: 1px solid var(--red);
+      box-shadow: -3px -3px 15px var(--red-glow), 3px 3px 15px var(--blue-glow);
+    }
+
+    .brand-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .brand-name .red-txt { color: var(--red); text-shadow: 0 0 12px var(--red-glow); }
+    .brand-name .blue-txt { color: var(--blue); text-shadow: 0 0 12px var(--blue-glow); }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-left: 2rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: all 0.25s;
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+      text-shadow: 0 0 10px var(--blue);
+    }
+
+    .btn-dual-border {
+      background: transparent;
+      color: #fff;
+      border: 1px solid transparent;
+      border-image: linear-gradient(135deg, var(--red), var(--blue)) 1;
+      padding: 10px 24px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-decoration: none;
+      letter-spacing: 2px;
+      transition: all 0.3s;
+      box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+    }
+
+    .btn-dual-border:hover {
+      background: linear-gradient(135deg, var(--red), var(--blue));
+      box-shadow: 0 0 35px var(--blue-glow);
+      transform: scale(1.04);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 95px 8% 65px;
+      text-align: center;
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .convergence-badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      padding: 6px 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 0, 68, 0.4);
+      border-right: 2px solid var(--blue);
+      border-left: 2px solid var(--red);
+      color: #e2e8f0;
+      letter-spacing: 3px;
+      margin-bottom: 25px;
+    }
+
+    .hero h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.4rem, 6.8vw, 4.6rem);
+      line-height: 1.1;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 25px;
+    }
+
+    .clash-gradient {
+      background: linear-gradient(135deg, #ff0044 0%, #ff5277 35%, #ffffff 50%, #5ce1e6 65%, #00d4ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 35px rgba(255, 0, 68, 0.4));
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 820px;
+      margin: 0 auto 40px;
+      line-height: 1.8;
+    }
+
+    .cta-cluster {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-red-power {
+      background: linear-gradient(135deg, #ff0044 0%, #850022 100%);
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      padding: 16px 36px;
+      text-decoration: none;
+      clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+      box-shadow: 0 0 30px var(--red-glow);
+      transition: all 0.3s;
+    }
+
+    .btn-red-power:hover {
+      box-shadow: 0 0 50px var(--red);
+      transform: translateY(-3px);
+    }
+
+    .btn-blue-power {
+      background: transparent;
+      color: var(--blue);
+      border: 1px solid var(--blue);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      padding: 16px 34px;
+      text-decoration: none;
+      clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+      box-shadow: inset 0 0 15px rgba(0, 212, 255, 0.2);
+      transition: all 0.3s;
+    }
+
+    .btn-blue-power:hover {
+      background: var(--blue);
+      color: #000;
+      box-shadow: 0 0 40px var(--blue-glow);
+      transform: translateY(-3px);
+    }
+
+    /* Clan Stats Meter */
+    .hud-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 1100px;
+      margin: 30px auto 80px;
+      padding: 0 8%;
+    }
+
+    .hud-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 24px;
+      text-align: center;
+      position: relative;
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .hud-card.red-border { border-bottom: 2px solid var(--red); }
+    .hud-card.blue-border { border-bottom: 2px solid var(--blue); }
+    .hud-card.purple-border { border-bottom: 2px solid var(--purple-accent); }
+
+    .hud-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .hud-card .num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.3rem;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .hud-card .desc {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      margin-top: 6px;
+    }
+
+    /* Section Layout */
+    .section-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 70px 8%;
+    }
+
+    .section-headline {
+      margin-bottom: 45px;
+      border-left: 4px solid var(--blue);
+      border-right: 4px solid var(--red);
+      padding: 0 18px;
+    }
+
+    .section-headline h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.2rem;
+      letter-spacing: 2px;
+    }
+
+    .section-headline p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    /* Interactive Matrix Terminal */
+    .terminal-arena {
+      background: rgba(8, 10, 16, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: -10px 0 40px rgba(255, 0, 68, 0.15), 10px 0 40px rgba(0, 212, 255, 0.15);
+    }
+
+    .terminal-nav {
+      background: #0d1017;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .tabs button {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      margin-right: 20px;
+      padding-bottom: 6px;
+      cursor: pointer;
+      letter-spacing: 1.5px;
+      transition: all 0.25s;
+    }
+
+    .tabs button.active {
+      color: #fff;
+      border-bottom: 2px solid var(--blue);
+      text-shadow: 0 0 10px var(--blue-glow);
+    }
+
+    .matrix-content {
+      padding: 40px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 35px;
+      align-items: center;
+    }
+
+    .matrix-content.hidden { display: none; }
+
+    .tag-cluster span {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      color: #7dd3fc;
+      padding: 5px 12px;
+      margin-right: 8px;
+      margin-top: 15px;
+    }
+
+    .preview-pod {
+      background: #030406;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      text-align: center;
+      position: relative;
+    }
+
+    .preview-pod::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 3px;
+      background: linear-gradient(90deg, var(--red), var(--blue));
+    }
+
+    /* Pricing Section */
+    .rates-deck {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 25px;
+    }
+
+    .deck-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 40px 30px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s;
+    }
+
+    .deck-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 0 35px rgba(0, 212, 255, 0.2);
+      border-color: var(--blue);
+    }
+
+    .deck-card.apex-card {
+      border: 1px solid var(--red);
+      box-shadow: 0 0 35px rgba(255, 0, 68, 0.25);
+    }
+
+    .apex-badge {
+      position: absolute;
+      top: 0; right: 0;
+      background: linear-gradient(135deg, var(--red), var(--blue));
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 5px 16px;
+      letter-spacing: 2px;
+    }
+
+    .deck-card h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.6rem;
+      letter-spacing: 1.5px;
+    }
+
+    .deck-price {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      margin: 15px 0 20px;
+    }
+
+    .red-price { color: var(--red); text-shadow: 0 0 20px var(--red-glow); }
+    .blue-price { color: var(--blue); text-shadow: 0 0 20px var(--blue-glow); }
+
+    .deck-price span {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .perk-rows {
+      list-style: none;
+      margin-bottom: 30px;
+    }
+
+    .perk-rows li {
+      font-size: 1.05rem;
+      color: #cbd5e1;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .perk-rows li::before {
+      content: "✦";
+      color: var(--blue);
+    }
+
+    .apex-card .perk-rows li::before {
+      color: var(--red);
+    }
+
+    /* Outro */
+    .outro-chamber {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 85px 8% 40px;
+      text-align: center;
+      background: linear-gradient(180deg, #040508 0%, #010204 100%);
+      margin-top: 80px;
+    }
+
+    .outro-chamber h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.4rem;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 850px) {
+      .matrix-content { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Collision Particles Canvas -->
+  <canvas id="dual-canvas"></canvas>
+  <div class="vignette"></div>
+
+  <div class="wrapper">
+
+    <!-- Top Strip -->
+    <div class="top-strip">
+      <div class="strip-red">✦ PROTOCOL: RED & BLUE APEX</div>
+      <div class="strip-blue">COMMISSIONS: ONLINE // 24-48H TURNAROUND ✦</div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="nav">
+      <div class="brand-wrap">
+        <div class="kanji-emblem">虚式</div>
+        <div class="brand-name">DESIGNERS<span class="red-txt">H</span><span class="blue-txt">UB</span></div>
+      </div>
+      <div class="nav-links">
+        <a href="#matrix">SHOWCASE</a>
+        <a href="#stats">METRICS</a>
+        <a href="#pricing">PRICING</a>
+      </div>
+      <a href="https://discord.gg/JBy5qbGeW" target="_blank" class="btn-dual-border">JOIN SANCTUM</a>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+      <div class="convergence-badge">✦ RED FLAME & AZURE ICE CLASH ✦</div>
+      <h1>THE SUPREME ARCHITECTURE FOR <span class="clash-gradient">DOMINANT GAMING CLANS</span></h1>
+      <p>When Crimson Power meets Azure Precision, ordinary server templates burn away. Command your esports roster, victory logs, and community lore with custom-coded cyber portals.</p>
+      <div class="cta-cluster">
+        <a href="https://discord.gg/JBy5qbGeW" target="_blank" class="btn-red-power">OPEN ORDER TICKET</a>
+        <a href="https://mikeystudio77.github.io/mikeystudio/?hl=en-IN" target="_blank" class="btn-blue-power">LIVE ARCHIVE DEMO</a>
+      </div>
+    </header>
+
+    <!-- Metrics -->
+    <div id="stats" class="hud-metrics">
+      <div class="hud-card red-border">
+        <div class="num" style="color: var(--red);">0.15s</div>
+        <div class="desc">EDGE SPEED LATENCY</div>
+      </div>
+      <div class="hud-card purple-border">
+        <div class="num" style="color: #c084fc;">$0</div>
+        <div class="desc">MONTHLY HOST BILLS</div>
+      </div>
+      <div class="hud-card blue-border">
+        <div class="num" style="color: var(--blue);">100%</div>
+        <div class="desc">CUSTOM CODE OWNERSHIP</div>
+      </div>
+    </div>
+
+    <!-- Live Matrix Terminal -->
+    <section id="matrix" class="section-wrap">
+      <div class="section-headline">
+        <h2>DUAL PROTOCOL ARCHIVE // 展示</h2>
+        <p>Interactive portal matrix. Test different operational modules.</p>
+      </div>
+
+      <div class="terminal-arena">
+        <div class="terminal-nav">
+          <div class="tabs">
+            <button class="active" onclick="switchMatrix(0)">01. LIVE DEMO</button>
+            <button onclick="switchMatrix(1)">02. COMBAT ROSTER</button>
+            <button onclick="switchMatrix(2)">03. CLAN LORE</button>
+          </div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--blue);">SYSTEM: ACTIVE</div>
+        </div>
+
+        <!-- Matrix Panel 0 -->
+        <div class="matrix-content" id="matrix-0">
+          <div>
+            <h3 style="font-family: 'Cinzel', serif; font-size: 1.8rem; margin-bottom: 12px; color: #fff;">MIKEY STUDIO CYBER CORE</h3>
+            <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.7;">
+              Engineered with a high-contrast clash theme for competitive clans. Zero lag, mobile-first responsive architecture with permanent zero-cost hosting.
+            </p>
+            <div class="tag-cluster">
+              <span>RAW HTML5/CSS</span>
+              <span>VERCEL/PAGES CLOUD</span>
+              <span>LIFETIME ZERO RECURRING</span>
+            </div>
+          </div>
+          <div class="preview-pod">
+            <h4 style="font-family: 'Orbitron', sans-serif; color: var(--blue); font-size: 1.3rem; margin-bottom: 10px;">ACTIVE DEPLOYMENT</h4>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">Inspect the live running production deployment now.</p>
+            <a href="https://mikeystudio77.github.io/mikeystudio/?hl=en-IN" target="_blank" class="btn-blue-power" style="display: block; text-align: center; font-size: 0.8rem;">INSPECT ENGINE ↗</a>
+          </div>
+        </div>
+
+        <!-- Matrix Panel 1 -->
+        <div class="matrix-content hidden" id="matrix-1">
+          <div>
+            <h3 style="font-family: 'Cinzel', serif; font-size: 1.8rem; margin-bottom: 12px; color: #fff;">ROSTER & RANK VAULT</h3>
+            <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.7;">
+              Spotlight your clan's aces, guild captains, tournament stats, and rank progression directly to opponents and prospective recruits.
+            </p>
+            <div class="tag-cluster">
+              <span>PLAYER SPOTLIGHTS</span>
+              <span>RANK BADGES</span>
+              <span>DISCORD SYNC</span>
+            </div>
+          </div>
+          <div class="preview-pod">
+            <h4 style="font-family: 'Orbitron', sans-serif; color: var(--red); font-size: 1.2rem; margin-bottom: 10px;">PRO TIER INCLUDED</h4>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">Available in our Pro Clan Portal package.</p>
+            <a href="https://discord.gg/JBy5qbGeW" target="_blank" class="btn-red-power" style="display: block; text-align: center; font-size: 0.8rem;">CLAIM ROSTER HUB</a>
+          </div>
+        </div>
+
+        <!-- Matrix Panel 2 -->
+        <div class="matrix-content hidden" id="matrix-2">
+          <div>
+            <h3 style="font-family: 'Cinzel', serif; font-size: 1.8rem; margin-bottom: 12px; color: #fff;">CLAN LORE & WAR CHRONICLES</h3>
+            <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.7;">
+              Archive clan history, match conquests, internal regulations, and faction lore in an cinematic dark-mode library.
+            </p>
+            <div class="tag-cluster">
+              <span>WAR LOGS</span>
+              <span>RULEBOOK PAGES</span>
+              <span>SCHEDULE MATRIX</span>
+            </div>
+          </div>
+          <div class="preview-pod">
+            <h4 style="font-family: 'Orbitron', sans-serif; color: #fff; font-size: 1.2rem; margin-bottom: 10px;">CUSTOM LORE PAGES</h4>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">Set your faction apart from basic servers.</p>
+            <a href="https://discord.gg/JBy5qbGeW" target="_blank" class="btn-blue-power" style="display: block; text-align: center; font-size: 0.8rem;">START DISCUSSION</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="section-wrap">
+      <div class="section-headline">
+        <h2>COMMISSION PROTOCOLS // 契約</h2>
+        <p>Flat rates. Zero monthly subscriptions. Lifetime ownership.</p>
+      </div>
+
+      <div class="rates-deck">
+        <!-- Tier 1 -->
+        <div class="deck-
